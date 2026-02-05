@@ -169,12 +169,12 @@ colororder(newcolors)
 nStim = size(bin_stim_all,1);
 
 %% Templates
-% load('MC_TEMPLATES.mat')
+load('MC_TEMPLATES.mat')
 % % template_lindemann1986 = itd2angle_lookuptable_pl(obj,fs,'lindemann1986');
 % % %%
 % % template_breebaart2001 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001');
 % %
-% template_breebaart2001_dau1997 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001dau1997');
+template_breebaart2001_dau1997 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001dau1997');
 % % %%
 % % template_faller2004 = itd2angle_lookuptable_pl(obj,fs,'faller2004');
 % % %%

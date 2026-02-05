@@ -25,11 +25,11 @@
 %Listener translation to the left is positive angle
 
 %% WHAT TO PLOT
-%do_fig = "plot_FF_whiteNoise";
+do_fig = "plot_FF_whiteNoise";
 %do_fig = "plot_VBAP_whiteNoise";
 %do_fig = "plot_LeadLag_whiteNoise";
 
-do_fig = "plot_FF_speech";
+%do_fig = "plot_FF_speech";
 %do_fig = "plot_VBAP_speech";
 %do_fig = "plot_LeadLag_speech";
 
@@ -586,51 +586,30 @@ ax.FontSize = 14;
 
 %% TAKANEN2013
 
-for idir = 1:nStim
-    bin_stim = squeeze(bin_stim_all(idir,:,:));
-    output(idir) = takanen2013pl(bin_stim,fs,1,0,0);
-end
-
-% 
-% if do_fig == 'plot_FF_whiteNoise'
-%     load('takanen_LOC_whiteNoise_FF.mat')
-% elseif do_fig == 'plot_VBAP_whiteNoise'
-%     load('takanen_LOC_whiteNoise_VBAP.mat')
-% elseif do_fig == 'plot_LeadLag_whiteNoise'
-%     load('takanen_LOC_whiteNoise_LeadLag.mat')
+% for idir = 1:nStim
+%     bin_stim = squeeze(bin_stim_all(idir,:,:));
+%     output(idir) = takanen2013pl(bin_stim,fs,1,0,0);
 % end
-
-%%
-for idir = 1:nStim
-
-    %est_angle_takanen_left(:,idir) = mean(real(output(idir).whereLeft),2);
-    %est_angle_takanen_right(:,idir) = -mean(real(output(idir).whereRight),2);
-
-
-    for itw = 1:Nwindows
-        sample_start = 1 + (itw-1)*hop_size;
-        sample_end = window_size + (itw-1)*hop_size;
-
-        est_angle_takanen_left(itw,idir) = mean(real(output(idir).whereLeft(sample_start:sample_end,:)),"all");
-        est_angle_takanen_right(itw,idir) = mean(real(output(idir).whereRight(sample_start:sample_end,:)),"all");
-        est_angle_takanen(itw,idir) = est_angle_takanen_right(itw,idir) - est_angle_takanen_left(itw,idir);
-
-    end
-end
-% %
 % 
-% %%
-subplot(1,7,6);
-%plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_takanen_left,'LineWidth',2,'LineStyle','--');
-%hold on;
-%plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_takanen_right,'LineWidth',2);
-plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_takanen,'LineWidth',2);
-
-
-% plot(1000/fs:1000/fs:length(est_angle_takanen)*1000/fs,est_angle_takanen','LineWidth',3);
-title("takanen2013")
-% ax = gca;
-% ax.FontSize = 14;
+% %
+% for idir = 1:nStim
+% 
+%     for itw = 1:Nwindows
+%         sample_start = 1 + (itw-1)*hop_size;
+%         sample_end = window_size + (itw-1)*hop_size;
+% 
+%         est_angle_takanen_left(itw,idir) = mean(real(output(idir).whereLeft(sample_start:sample_end,:)),"all");
+%         est_angle_takanen_right(itw,idir) = mean(real(output(idir).whereRight(sample_start:sample_end,:)),"all");
+%         est_angle_takanen(itw,idir) = est_angle_takanen_right(itw,idir) - est_angle_takanen_left(itw,idir);
+% 
+%     end
+% end
+% 
+% subplot(1,7,6);
+% plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_takanen,'LineWidth',2);
+% 
+% 
+% title("takanen2013")
 
 %% DESENA2020
 clear est_angle_time

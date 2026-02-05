@@ -52,15 +52,17 @@ colororder(newcolors)
 
 %% Templates
 load('MC_TEMPLATES.mat')
+% Compute templates once (uncomment below) and store
+
 % %%
 % template_lindemann1986 = itd2angle_lookuptable_pl(obj,fs,'lindemann1986');
-% %%
-% template_breebaart2001 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001');
-% %%
-% template_faller2004 = itd2angle_lookuptable_pl(obj,fs,'faller2004');
-% %%
-% template_dietz2011 = itd2angle_lookuptable_pl(obj,fs,'dietz2011');
 % % %%
+% template_breebaart2001 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001');
+% % %%
+% template_faller2004 = itd2angle_lookuptable_pl(obj,fs,'faller2004');
+% % %%
+% template_dietz2011 = itd2angle_lookuptable_pl(obj,fs,'dietz2011');
+% % % %%
 % template_desena2020 = desena2020_buildtemplate(obj);
 
 
@@ -438,83 +440,25 @@ ax.FontSize = 14;
 
 
 %% TAKANEN2013
-%UNCOMMENT THE FIRST SECTION ONLY ONCE
-
-output = takanen2013pl(bin_stim,fs,1,0,0);
-
-est_angle_takanen_left = mean(real(output.whereLeft),1);
-est_angle_takanen_right = mean(real(output.whereRight),1);
-est_angle_takanen = est_angle_takanen_right - est_angle_takanen_left;
-
-
-subplot(4,2,7)
-hold on;
-%plot(output.fc,est_angle_takanen_left','LineWidth',2,'LineStyle','--','Color',newcolors(idir,:));
-%plot(output.fc,est_angle_takanen_right','LineWidth',2,'Color',newcolors(idir,:));%,'FaceColor',[255,217,47]/256);
-plot(output.fc,est_angle_takanen','LineWidth',2,'LineStyle','-','Color',newcolors(idir,:));
-
-set(gca, 'XScale', 'log');
-%yline(30,'--r','LineWidth',2);
-%ylim([-60 60])
-ylabel('Est. angle (°)'); xlabel('Frequency (Hz)')
-title("takanen2013")
-ax = gca;
-ax.FontSize = 14;
-
-
-
-
-%OLD
-% %output = takanen2013pl(bin_stim,fs,1,0,0);
 % 
-% % subplot(4,2,7)
-% % bar(median(output.directionCues.rightMso),'FaceColor',[252,141,98]/256);
-% % hold on;
-% % %yline(30,'--r','LineWidth',2);
-% % %ylim([-60 60])
-% % ylabel('Est. angle (°)'); xlabel('Frequency (Hz)')
-% % title("takanen2013 (MSO)")
-% % ax = gca;
-% % ax.FontSize = 14;
+% output = takanen2013pl(bin_stim,fs,1,0,0);
 % 
-% % subplot(4,2,8)
-% % bar(median(output.directionCues.rightLso),'FaceColor',[252,141,98]/256);
-% % hold on;
-% % %yline(30,'--r','LineWidth',2);
-% % %ylim([-60 60])
-% % ylabel('Est. angle (°)'); xlabel('Frequency (Hz)')
-% % title("takanen2013 (LSO)")
-% % ax = gca;
-% % ax.FontSize = 14;
+% est_angle_takanen_left = mean(real(output.whereLeft),1);
+% est_angle_takanen_right = mean(real(output.whereRight),1);
+% est_angle_takanen = est_angle_takanen_right - est_angle_takanen_left;
+% 
 % 
 % subplot(4,2,7)
-% if abs(mean(output.directionCues.rightWbMso(:))) > abs(mean(output.directionCues.leftWbMso(:)))
-%     bar(-mean(output.directionCues.rightWbMso),'FaceColor',[252,141,98]/256);
-% else
-%     bar(-mean(output.directionCues.leftWbMso),'FaceColor',[252,141,98]/256);
-% end
 % hold on;
-% %yline(30,'--r','LineWidth',2);
-% %ylim([-60 60])
+% plot(output.fc,est_angle_takanen','LineWidth',2,'LineStyle','-','Color',newcolors(idir,:));
+% 
+% set(gca, 'XScale', 'log');
 % ylabel('Est. angle (°)'); xlabel('Frequency (Hz)')
-% title("takanen2013 (wbMSO)")
+% title("takanen2013")
 % ax = gca;
 % ax.FontSize = 14;
-% 
-% %
-% %figure;
-% %bar(mean(output.directionCues.leftMso))
-% %figure;
-% %bar(mean(output.directionCues.rightMso))
-% %figure;
-% %bar(mean(output.directionCues.leftLso))
-% %figure;
-% %bar(mean(output.directionCues.rightLso))
-% %figure;
-% % bar(median(output.directionCues.leftWbMso))
-% % figure;
-% % bar(median(output.directionCues.rightWbMso))
-% % figure;
+
+
 
 %% DESENA2020
 % Compute interaural cues for the binaural stimulus
