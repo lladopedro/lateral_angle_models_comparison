@@ -1,28 +1,7 @@
-% SCRIPT TO GENERATE THE PLOT SHOWING ESTIMATED ANGLES PER FREQUENCY
-% CHANNEL
+% AUTHOR: Pedro Llado
+% SCRIPT TO GENERATE THE PLOT COMPARING DIFFERENT PRESENTATION LEVELS USING
+% BREEBAART2001
 
-%TODO
-% NORMALISE THE LEVEL FOR THE GAUSSIAN NOISE FROM FALLER
-% COMPUTE THE ITD-BASED LOCALISATION ONLY DURING/AFTER A MOMENT OF VERY
-% HIGH COHERENCE?
-
-
-% Include speech.
-% Include low-passed and high-passed
-% Time-dependent estimates (50ms window, 1ms stepsize)?
-% ITD/ILD/FREQ DEPENDENT weights - include Ahrens2020?
-% Check what's wrong with Faller's ild2angle.
-% How to derive direction for takanen2013 properly
-% 
-% Does the frequency range affect the results?
-% Does the number of channels change the results substantially?
-% Does compression affect? (Dietz 2011)
-% 4th order phase compensated? (May 2011)
-% DRNL?
-
-%CONVENTION:
-%Left is positive angle, negative itd, negative ild.
-%Listener translation to the left is positive angle
 
 %% WHAT TO PLOT
 do_fig = "plot_FF_whiteNoise";
@@ -53,7 +32,6 @@ spacingERB = 1; % in ERB
 randn('seed',13121);
 
 %% Load SOFA file
-%obj = SOFAload("aux_data/HRTFs/HUTUBS/pp55_HRIRs_simulated.sofa");
 obj = SOFAload("aux_data/HRTFs/SADIE/D1_HRIR_SOFA/D1_48K_24bit_256tap_FIR_SOFA.sofa");
 fs = obj.Data.SamplingRate;
 
@@ -61,14 +39,12 @@ fs = obj.Data.SamplingRate;
 clear bin_stim_all est_angle est_angle_f est_angle_itd est_angle_ild X_VALUES
 
 if do_fig == "plot_FF_whiteNoise"
-    %noise = randn(fs/50,1);
     noise = randn(fs/4,1);
 
     w = cos(2*pi*25*[1/fs:1/fs:1/100]').^2;
     noise(1:length(w)) = noise(1:length(w)) .* w(end:-1:1);
     noise(end-length(w)+1:end) = noise(end-length(w)+1:end) .* w;
     stim = noise;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     X_VALUES = 60;%-90:30:90;
     for idir = 1:length(X_VALUES)
@@ -76,13 +52,11 @@ if do_fig == "plot_FF_whiteNoise"
     end
 
 elseif do_fig == "plot_VBAP_whiteNoise"
-    %noise = randn(fs/50,1);
     noise = randn(fs/4,1);
     w = cos(2*pi*25*[1/fs:1/fs:1/100]').^2;
     noise(1:length(w)) = noise(1:length(w)) .* w(end:-1:1);
     noise(end-length(w)+1:end) = noise(end-length(w)+1:end) .* w;
     stim = noise;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     lsp_angles = [-30 30];
     X_VALUES = -20:5:20; %dB in VBAP
@@ -91,16 +65,14 @@ elseif do_fig == "plot_VBAP_whiteNoise"
     end
 
 elseif do_fig == "plot_LeadLag_whiteNoise"
-    % noise = randn(fs/50,1);
     noise = randn(fs/4,1);
     w = cos(2*pi*25*[1/fs:1/fs:1/100]').^2;
     noise(1:length(w)) = noise(1:length(w)) .* w(end:-1:1);
     noise(end-length(w)+1:end) = noise(end-length(w)+1:end) .* w;
     stim = noise;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     lsp_angles = [30 -30];
-    X_VALUES = [0 0.5 1:3:21]; %[0:0.25:2 5:5:20];
+    X_VALUES = [0 0.5 1:3:21]; 
     extra_taps = ceil(max(X_VALUES*fs/1000));
     for idir = 1:length(X_VALUES)
         if X_VALUES(idir) == 0
@@ -118,7 +90,6 @@ elseif do_fig == "plot_FF_speech"
     speech(1:length(w)) = speech(1:length(w)) .* w(end:-1:1);
     speech(end-length(w)+1:end) = speech(end-length(w)+1:end) .* w;
     stim = speech;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     X_VALUES = -90:30:90;
     for idir = 1:length(X_VALUES)
@@ -133,7 +104,6 @@ elseif do_fig == "plot_VBAP_speech"
     speech(1:length(w)) = speech(1:length(w)) .* w(end:-1:1);
     speech(end-length(w)+1:end) = speech(end-length(w)+1:end) .* w;
     stim = speech;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     lsp_angles = [-30 30];
     X_VALUES = -20:5:20; %dB in VBAP
@@ -148,10 +118,9 @@ elseif do_fig == "plot_LeadLag_speech"
     speech(1:length(w)) = speech(1:length(w)) .* w(end:-1:1);
     speech(end-length(w)+1:end) = speech(end-length(w)+1:end) .* w;
     stim = speech;
-    %stim = scaletodbspl(stim,lvl_dB);%,dboffset);
     
     lsp_angles = [30 -30];
-    X_VALUES = [0 0.5 1:3:21]; %[0:0.25:2 5:5:20];
+    X_VALUES = [0 0.5 1:3:21]; 
     extra_taps = ceil(max(X_VALUES*fs/1000));
     for idir = 1:length(X_VALUES)
         if X_VALUES(idir) == 0
@@ -170,32 +139,8 @@ nStim = size(bin_stim_all,1);
 
 %% Templates
 load('MC_TEMPLATES.mat')
-% template_lindemann1986 = itd2angle_lookuptable_pl(obj,fs,'lindemann1986');
-% %%
+
 % template_breebaart2001 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001');
-%
-%template_breebaart2001_dau1997 = itd2angle_lookuptable_pl(obj,fs,'breebaart2001dau1997');
-% %%
-% template_faller2004 = itd2angle_lookuptable_pl(obj,fs,'faller2004');
-% %%
-% template_dietz2011 = itd2angle_lookuptable_pl(obj,fs,'dietz2011');
-% %%
-% template_desena2020 = desena2020_buildtemplate(obj);
-
-% col_matrix = [%102,194,165; %lindemann
-% 252,141,98; %takanen
-% 141,160,203; %breebaart
-% 231,138,195; %faller
-% 166,216,84; %may
-% 255,217,47; %dietz
-% 229,196,148; %macpherson
-% 179,179,179; %desena
-% 0, 0, 0]/256; %saddler
-%legend("lindemann1986","breebaart2001","faller2004","may2011","dietz2011","takanen2013","desena2020")
-
-%bin_stim = bin_stim(400:1400,:);
-%figure; hold on;
-
 %%
 
 window_size = round(fs*0.05); %50ms
@@ -206,9 +151,6 @@ Nwindows = ceil((size(bin_stim_all,2)-window_size)/hop_size);
 
 
 %%
-%figure;
-hold on;
-
 linsty = [":","-.","--","-"];
 iplot = 1;
 
@@ -229,86 +171,69 @@ for lvl_dB = [30:20:90] % dB SPL
     sig_corr_rms = rms(sig_corr);
     norm_factor = sig_corr_rms./sig_uncorr_rms;
 
-%% BREEBAART2001
-clear est_angle_time
-
-for idir = 1:nStim
-    bin_stim = squeeze(bin_stim_all(idir,:,:));
-    bin_stim(:,1) = bin_stim(:,1) * norm_factor(1);
-    bin_stim(:,2) = bin_stim(:,2) * norm_factor(2);
-
-    [ei_map,cfreq,outsigl,outsigr] = breebaart2001(bin_stim,fs,0,0,'flow',fLow,'fhigh',fHigh);
+    %% BREEBAART2001
+    clear est_angle_time
     
-    clear itd ild crosscorr
-    maxLag = 0.001;
-    for itw = 1:Nwindows
-        sample_start = 1 + (itw-1)*hop_size;
-        sample_end = window_size + (itw-1)*hop_size;
-        current_window_L = outsigl(sample_start:sample_end,:);
-        current_window_R = outsigr(sample_start:sample_end,:);
-
-        iaccFuncts = zeros(round(2*maxLag*fs+1),length(cfreq));
-        clear crosscorr
-        for freqInd=1:length(cfreq)
-            crosscorr(:,freqInd) = xcorr(current_window_L(:,freqInd),...
-                current_window_R(:,freqInd),round(maxLag*fs),'coeff'); %COEFF: 
-                                        %Normalizes the sequence so that the
-                                        %autocorrelations at zero lag equal 1
-        end
+    for idir = 1:nStim
+        bin_stim = squeeze(bin_stim_all(idir,:,:));
+        bin_stim(:,1) = bin_stim(:,1) * norm_factor(1);
+        bin_stim(:,2) = bin_stim(:,2) * norm_factor(2);
+    
+        [ei_map,cfreq,outsigl,outsigr] = breebaart2001(bin_stim,fs,0,0,'flow',fLow,'fhigh',fHigh);
         
-        crosscorr = crosscorr';
-        
-        % Calculate tau (delay line time) axes
-        tau = linspace(-1,1,size(crosscorr,2));
-        % find max in cc
-        itd = zeros(size(crosscorr,1),size(crosscorr,3));
-        itd_centroid = zeros(size(crosscorr,1),size(crosscorr,3));
-        for ii=1:size(crosscorr,1)
-            %tau_centroid(ii) = lindemann1986_centroid(crosscorr(ii,:));
-            %itd_centroid(ii) = tau_centroid(ii)/1000;
-            for jj=1:size(crosscorr,3)
-                [~,idx] = max(crosscorr(ii,:,jj));
-                itd(ii,jj) = tau(idx)/1000;
+        clear itd ild crosscorr
+        maxLag = 0.001;
+        for itw = 1:Nwindows
+            sample_start = 1 + (itw-1)*hop_size;
+            sample_end = window_size + (itw-1)*hop_size;
+            current_window_L = outsigl(sample_start:sample_end,:);
+            current_window_R = outsigr(sample_start:sample_end,:);
+    
+            iaccFuncts = zeros(round(2*maxLag*fs+1),length(cfreq));
+            clear crosscorr
+            for freqInd=1:length(cfreq)
+                crosscorr(:,freqInd) = xcorr(current_window_L(:,freqInd),...
+                    current_window_R(:,freqInd),round(maxLag*fs),'coeff');
+            end
+            
+            crosscorr = crosscorr';
+            
+            % Calculate tau (delay line time) axes
+            tau = linspace(-1,1,size(crosscorr,2));
+            % find max in cc
+            itd = zeros(size(crosscorr,1),size(crosscorr,3));
+            itd_centroid = zeros(size(crosscorr,1),size(crosscorr,3));
+            for ii=1:size(crosscorr,1)
+                for jj=1:size(crosscorr,3)
+                    [~,idx] = max(crosscorr(ii,:,jj));
+                    itd(ii,jj) = tau(idx)/1000;
+                end
+            end
+            ild = dbspl(current_window_R) - dbspl(current_window_L);
+            est_angle_f = itd2angle(itd,template_breebaart2001);
+            est_angle(idir) = nanmedian(est_angle_f);
+            est_angle_time(itw,idir) = est_angle(idir);
+    
+            if itw == 1 && idir ==1
+                figure(302); hold on;
+                plot(1000*[1/fs:1/fs:length(outsigl)/fs],outsigl(:,14),'LineWidth',2,'Color',color_levels(icolorlevel,:)); %1 kHz
+                icolorlevel = icolorlevel+1;
             end
         end
-        ild = dbspl(current_window_R) - dbspl(current_window_L);
-        est_angle_f = itd2angle(itd,template_breebaart2001);
-        est_angle(idir) = nanmedian(est_angle_f);
-        %est_angle(idir) = nanmean(est_angle_f);
-        est_angle_time(itw,idir) = est_angle(idir);
-
-        if itw == 1 && idir ==1
-            figure(302); hold on;
-            %subplot(1,3,1); hold on;
-            %MC_plot_allfreqch(outsigl,cfreq,'analysis_freqs',[125 250 500 1000 2000 4000],'color',[0 0 0]/256);
-            plot(1000*[1/fs:1/fs:length(outsigl)/fs],outsigl(:,14),'LineWidth',2,'Color',color_levels(icolorlevel,:)); % 'LineStyle',linsty(iplot),%1kHz
-            icolorlevel = icolorlevel+1;
-        end
     end
-end
-
-%subplot(1,7,2);
-figure(301); hold on;
-%newcolors = flipud(turbo(length(X_VALUES)));
-%colororder(newcolors)
-plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_time,'LineWidth',2,'Color',color_levels(icolorlevel2,:));%'LineStyle',linsty(iplot));%,'color',[102,194,165]/256
-icolorlevel2 = icolorlevel2+1;
-ax = gca;
-ax.FontSize = 14;
-legend("30 dB SPL","50 dB SPL","70 dB SPL","90 dB SPL")
-
-% subplot(1,7,2);
-% plot(X_VALUES,est_angle,'color',[141,160,203]/256,'LineWidth',3);
-% %title("breebaart2001")
-% ax = gca;
-% ax.FontSize = 14;
-
-iplot = iplot+1;
+    
+    figure(301); hold on;
+    plot([1:hop_size_in_ms:hop_size_in_ms*length(est_angle_time)],est_angle_time,'LineWidth',2,'Color',color_levels(icolorlevel2,:));
+    icolorlevel2 = icolorlevel2+1;
+    ax = gca;
+    ax.FontSize = 14;
+    legend("30 dB SPL","50 dB SPL","70 dB SPL","90 dB SPL")
+    
+    iplot = iplot+1;
 end
 
 %% TAKE CARE OF THE AXES
 if do_fig == "plot_FF_whiteNoise"
-    %for isubplot = 1:7
         figure(301)
         ylabel('Est. angle (°)');
         xlabel('Time (ms)')
@@ -325,98 +250,9 @@ if do_fig == "plot_FF_whiteNoise"
         xlabel('Time (ms)')
         xlim([0 300])
         xticks([0:100:200])
-        %yticks([-90:45:90])
         grid on;
         ax = gca;
         ax.FontSize = 22;
-        legend("30 dB SPL","50 dB SPL","70 dB SPL","90 dB SPL");%, "relanoiborra2019")
-    %end
-% 
-% elseif do_fig == "plot_VBAP_whiteNoise"
-%     for isubplot = 1:7
-%         subplot(1,7,isubplot)
-%         xlim([0 300])
-%         xticks([0:100:2000])
-%         ylim([-50 50])
-%         ylabel('Est. angle (°)');
-%         xlabel('Time (ms)')
-%         yticks([-45:15:45])
-%         grid on;
-%         ax = gca;
-%         ax.FontSize = 22;
-%     end
-% 
-% elseif do_fig == "plot_LeadLag_whiteNoise"
-%     for isubplot = 1:7
-%         subplot(1,7,isubplot)
-%         xlim([0 300])
-%         xticks([0:100:200])
-%         ylabel('Est. angle (°)');
-%         xlabel('Time (ms)')
-%         ylim([-50 50])
-%         yticks([-45:15:45])
-%         grid on;
-%         ax = gca;
-%         ax.FontSize = 22;
-%     end
-elseif do_fig == "plot_FF_speech"
-     %isubplot = 1:7
-        %subplot(1,7,isubplot)
-        figure(302)
-        ylabel('Amplitude');
-        xlabel('Time (ms)')
-        xlim([0 1100])
-        %ylim([-100 100])
-        xticks([0:250:1000])
-        %yticks([-90:45:90])
-        grid on;
-        ax = gca;
-        ax.FontSize = 22;
-    
-        figure(301)
-        ylabel('Est. angle (°)');
-        xlabel('Time (ms)')
-        xlim([0 1100])
-        ylim([-100 100])
-        xticks([0:250:1000])
-        yticks([-90:45:90])
-        grid on;
-        ax = gca;
-        ax.FontSize = 22;
-% 
-% elseif do_fig == "plot_VBAP_speech"
-%     for isubplot = 1:7
-%         subplot(1,7,isubplot)
-%         xlim([0 1100])
-%         xticks([0:250:1000])
-%         ylim([-50 50])
-%         ylabel('Est. angle (°)');
-%         xlabel('Time (ms)')
-%         yticks([-45:15:45])
-%         grid on;
-%         ax = gca;
-%         ax.FontSize = 22;
-%     end
-% 
-% elseif do_fig == "plot_LeadLag_speech"
-%     for isubplot = 1:7
-%         subplot(1,7,isubplot)
-%         xlim([0 1100])
-%         xticks([0:250:1000])
-%         ylabel('Est. angle (°)');
-%         xlabel('Time (ms)')
-%         ylim([-50 50])
-%         yticks([-45:15:45])
-%         grid on;
-%         ax = gca;
-%         ax.FontSize = 22;
-%     end
+        legend("30 dB SPL","50 dB SPL","70 dB SPL","90 dB SPL");
+ 
 end
-% 
-% 
-% %%
-% %legend("lindemann1986","breebaart2001","faller2004","may2011","dietz2011","takanen2013","desena2020")
-% % %title("")
-% % xticks([0:5:20])
-% % xlim([-1 21])
-% % xlabel("Lag (ms)")
